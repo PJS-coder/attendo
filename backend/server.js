@@ -1,6 +1,7 @@
 // Attendance App Backend - Express server for absentee email notifications
 // Save as backend/server.js
 
+import 'dotenv/config';
 import express from 'express';
 import nodemailer from 'nodemailer';
 import cors from 'cors';
@@ -95,10 +96,22 @@ const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER || 'thakuranujtm6@gmail.com',
-    pass: process.env.EMAIL_PASS || 'your-app-password'  // Use environment variable in production
+    pass: process.env.EMAIL_PASS || 'your-app-password'  // Use App Password, not regular password
   },
+  secure: true, // Use SSL
+  port: 465,
   tls: {
     rejectUnauthorized: false
+  }
+});
+
+// Test email connection on startup
+transporter.verify(function(error, success) {
+  if (error) {
+    console.log('❌ Email transporter verification failed:', error.message);
+    console.log('🔧 Make sure to set EMAIL_USER and EMAIL_PASS environment variables with Gmail App Password');
+  } else {
+    console.log('✅ Email server is ready to send messages');
   }
 });
 
